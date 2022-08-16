@@ -2,20 +2,29 @@ const { query } = require('express');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 
+const myconnection = mysql.createConnection({
+    host: 'localhost',
+    // MySQL username,
+    user: 'root',
+    // MySQL password
+    password: 'P@ssw0rd',
+    database: 'employee_tracker'
+},
+    console.log(`Connected to the courses_db database.`)
+);
 
-function show(myQuery) {
-    const myconnection = mysql.createConnection({
-        host: 'localhost',
-        // MySQL username,
-        user: 'root',
-        // MySQL password
-        password: 'P@ssw0rd',
-        database: 'employee_tracker'
-    },
-        console.log(`Connected to the courses_db database.`)
-    );
+
+function init(){
+   
+    prompt();   
+}
+
+async function show(myQuery) {
+   
     myconnection.query(myQuery, function (error, results) {
-        console.log(results)
+
+        //TO be understood
+        console.table(results)
     })
 }
 
@@ -29,7 +38,7 @@ const intro_question = [{
 }]
 
 
-
+function prompt(){
 inquirer.prompt(intro_question).then(answers => {
     switch (answers.introquestions) {
         case 'View All Departments':
@@ -60,9 +69,14 @@ inquirer.prompt(intro_question).then(answers => {
                 show(`INSERT INTO department (name)
                 VALUES ("${answers.department_name}"); `)
                 console.log(`Added ${answers.department_name} to the database`);
+                prompt();
             })
             break;
         case 'Add Role':
+            const departmentChoices =  show(`
+            SELECT name
+            FROM department
+            `)
             inquirer.prompt([{
                 name: "roleName",
                 message: "What is the name of the role?"
@@ -75,9 +89,7 @@ inquirer.prompt(intro_question).then(answers => {
                 type: 'list',
                 name: "department",
                 message: "Which department does the role belong to?",
-
-                //TO BE FIXED
-                choices: ['Engineering', 'Finance', 'Legal', 'Sales', 'Service']
+                choices: departmentChoices
             }
             ]).then(
                 answers => {
@@ -90,8 +102,20 @@ inquirer.prompt(intro_question).then(answers => {
                     console.log(`Added ${departmentName} to the database`);
                 }
             )
+            prompt();
             break;
         case 'Add Employee':
+            const roleChoices = show(`
+            SELECT title
+            FROM role;
+            `);
+
+            const managerList = show(`
+            SELECT CONCAT(manager.first_name,manager.last_name)
+            FROM employee AS manager
+            JOIN employee
+            WHERE employee.manager_id = manager.id;
+            `);
             inquirer.prompt([{
                 name: 'employeeFname',
                 message: 'What is the employee\'s first name?'
@@ -104,16 +128,14 @@ inquirer.prompt(intro_question).then(answers => {
                 type: 'list',
                 name: 'employeeRole',
                 message: 'What is the employee\'s role?',
-
-                //to be fixed
-                choices: ['Sales Lead', 'Sales Person', 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead', 'Lawyer', 'Customer Service', 'Sales Lead', 'Salesperson', 'Lead Engineer']
+                choices: roleChoices
             },
             {
                 type: 'list',
                 name: 'manager',
                 message: 'What is the employee\'s manager?',
                 //TO BE FIXED ADD NONE
-                choices: ['mina', 'nabil']
+                choices: managerList
             }
 
             ]).then(
@@ -132,6 +154,7 @@ inquirer.prompt(intro_question).then(answers => {
                             "2");`)
 
                     console.log(answers.employeeFname + ' ' + answers.employeeLname + " " + roleId + " " + managerId);
+                    prompt();
                 }
             )
             break;
@@ -148,5 +171,6 @@ inquirer.prompt(intro_question).then(answers => {
     }
 }
 )
+}
 
-
+init();
