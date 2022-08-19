@@ -19,12 +19,13 @@ function init(){
     prompt();   
 }
 
-async function show(myQuery) {
+function show(myQuery) {
    
     myconnection.query(myQuery, function (error, results) {
 
         //TO be understood
-        console.table(results)
+        return results;
+
     })
 }
 
@@ -58,7 +59,7 @@ inquirer.prompt(intro_question).then(answers => {
         JOIN department
         ON role.department_id = department.id)
         INNER JOIN employee manager
-        ON employee.manager_id = manager.id`)
+        ON employee.manager_id = manager.id;`)
 
             break;
         case 'Add Department':
@@ -116,6 +117,7 @@ inquirer.prompt(intro_question).then(answers => {
             JOIN employee
             WHERE employee.manager_id = manager.id;
             `);
+            console.log(managerList);
             inquirer.prompt([{
                 name: 'employeeFname',
                 message: 'What is the employee\'s first name?'
@@ -173,4 +175,15 @@ inquirer.prompt(intro_question).then(answers => {
 )
 }
 
-init();
+
+// init();
+console.log(show(`
+SELECT *
+FROM department;
+`));
+
+// myconnection.query(`select * from department`, (err,res)=>console.log(res));
+
+
+
+// myconnection.query('select * from department;',(err,res)=>console.log(res));
