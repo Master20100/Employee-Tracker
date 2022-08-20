@@ -1,8 +1,10 @@
-const { query } = require('express');
-const inquirer = require('inquirer');
-const mysql = require('mysql2');
+import inquirer from 'inquirer';
+import mysql from 'mysql2'
+// const inquirer = require('inquirer');
+// const mysql = require('mysql2');
 
-const myconnection = mysql.createConnection({
+
+const myconnection =  mysql.createConnection({
     host: 'localhost',
     // MySQL username,
     user: 'root',
@@ -19,14 +21,16 @@ function init(){
     prompt();   
 }
 
-function show(myQuery) {
+ function show(myQuery) {
    
-    myconnection.query(myQuery, function (error, results) {
+    // return 
+    const x =  myconnection.query(myQuery, function (error, results) {
 
         //TO be understood
         return results;
 
     })
+    return x;
 }
 
 
@@ -177,11 +181,11 @@ inquirer.prompt(intro_question).then(answers => {
 
 
 // init();
-console.log(show(`
+let results = show(`
 SELECT *
 FROM department;
-`));
-
+`);
+console.log(results);
 // myconnection.query(`select * from department`, (err,res)=>console.log(res));
 
 
