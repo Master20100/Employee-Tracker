@@ -26,36 +26,9 @@ function show(myQuery) {
         prompt();
     })
 }
-function showReturn(myQuery) {
-    myconnection.query(myQuery, (err, res) => {
-    if(err)console.log(err);
-     return res;
-})
-}
 
 
-//  function show1(myQuery) {
-//     // return 
-//     myconnection.query(myQuery,(err,res)=>{        
-//     }
-//     )
-// }
-//  function show2(myQuery) {
-//     // return 
-//     myconnection.query(myQuery, function (err, result, fields) {
-//         // if any error while executing above query, throw error
-//         if (err) throw err;
-//         // if there is no error, you have the result
-//         // iterate for all the rows in result
-//         let x = []
-//         Object.keys(result).forEach(function(key) {
-//           var row = result[key];
-//           x.push(row.name);
-//         });
-//         console.log(x);
-//         return x;
-//       });
-//     };
+
 
 
 
@@ -127,7 +100,6 @@ function prompt() {
                 //it does return an array of arrays, the first array is the table we would like to retrieve
                 const [departments] =  await myconnection.promise().query(`SELECT * FROM department`);
                 const departmentChoices = departments.map(el => ({name: el.name, value: el.id}))
-                    console.log(departmentChoices);
                             inquirer.prompt([{
                             name: "roleName",
                             message: "What is the name of the role?"
@@ -147,7 +119,7 @@ function prompt() {
                         
                                 show(`INSERT INTO role(title,salary,department_id)
                                  VALUES("${answers.roleName}","${answers.salary}", "${answers.department}")`)
-                                console.log(`Added ${answers.department} to the database`);
+                                console.log(`Added ${answers.roleName} to the database`);
                             }
                         )
                     
@@ -158,10 +130,11 @@ function prompt() {
                         const roleChoices = roles.map(el => ({name: el.title, value: el.id}));
                         const [manager] = await myconnection.promise().query(` SELECT *
                         FROM employee;`);
-                        const managerList = manager.map(el => ({name: el.first_name+' '+el.last_name, value: el.id}))
+                        let managerList = [{}];
+                         managerList = manager.map(el => ({name: el.first_name+' '+el.last_name, value: el.id}));
+                        if(managerList.length === 0){managerList.push({name:"no manager", value: "0"})};
                         
-                
-                        console.log(managerList);
+                        
                         inquirer.prompt([{
                             name: 'employeeFname',
                             message: 'What is the employee\'s first name?'
@@ -254,146 +227,3 @@ function prompt() {
                 
                 
 init();
-
-
-
-                // async function x() {
-                //     const result =  await myconnection.promise().query(`SELECT * FROM department`);
-                // console.table(result[0]);
-                // }
-
-                
-
-                // const departmentChoices =  (async()=>(await myconnection.promise().query(`SELECT * FROM department`)))();
-                // console.log(departmentChoices);
-                
-                
-                // prompt();
-
-                // function x() {
-                //     return new Promise(resolve => {
-                //         myconnection.query(`SELECT name FROM department`,(err,res)=>{
-                //             console.log(res);
-                //             resolve(
-
-                                
-                //             );
-                //             })    
-
-                //     });
-                //   }
-                  
-                //   async function y() {
-                //     const msg = await x();
-                //     console.log('Message:', msg);
-                //   } 
-                
-                //    y();
-
-                // init();
-                // let results =  show(`
-                // SELECT *
-                // FROM department;
-                // `);
-                // console.log(results);
-                // myconnection.query(`select * from department`, (err,res)=>console.log(res));
-                // show(`select * from department`, (err,res)=>console.log(res));
-                
-                
-                
-                // myconnection.query('select * from department;',(err,res)=>console.log(res));
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                //                 const roleSql = `SELECT name, id FROM department`; 
-            
-                //   myconnection.query(roleSql, (err, data) => {
-                //     if (err) throw err; 
-                
-                //     const dept = data.map(({ name, id }) => ({ name: name, value: id }));
-               
-
-
-
-
-
-
-
-
-
-
-
-
-                      // addRole = () => {
-                    //     inquirer.prompt([
-                    //       {
-                    //         type: 'input', 
-                    //         name: 'role',
-                    //         message: "What role do you want to add?",
-                    //         validate: addRole => {
-                    //           if (addRole) {
-                    //               return true;
-                    //           } else {
-                    //               console.log('Please enter a role');
-                    //               return false;
-                    //           }
-                    //         }
-                    //       },
-                    //       {
-                    //         type: 'input', 
-                    //         name: 'salary',
-                    //         message: "What is the salary of this role?",
-                    //         validate: addSalary => {
-                    //           if (isNAN(addSalary)) {
-                    //               return true;
-                    //           } else {
-                    //               console.log('Please enter a salary');
-                    //               return false;
-                    //           }
-                    //         }
-                    //       }
-                    //     ])
-                    //       .then(answer => {
-                    //         const params = [answer.role, answer.salary];
-                      
-                    //         // grab dept from department table
-                    //         const roleSql = `SELECT name, id FROM department`; 
-                      
-                    //         myconnection.promise().query(roleSql, (err, data) => {
-                    //           if (err) throw err; 
-                          
-                    //           const dept = data.map(({ name, id }) => ({ name: name, value: id }));
-                      
-                    //           inquirer.prompt([
-                    //           {
-                    //             type: 'list', 
-                    //             name: 'dept',
-                    //             message: "What department is this role in?",
-                    //             choices: dept
-                    //           }
-                    //           ])
-                    //             .then(deptChoice => {
-                    //               const dept = deptChoice.dept;
-                    //               params.push(dept);
-                      
-                    //               const sql = `INSERT INTO role (title, salary, department_id)
-                    //                           VALUES (?, ?, ?)`;
-                      
-                    //               myconnection.query(sql, params, (err, result) => {
-                    //                 if (err) throw err;
-                    //                 console.log('Added' + answer.role + " to roles!"); 
-                      
-                    //                 showRoles();
-                    //          });
-                    //        });
-                    //      });
-                    //    });
-                    //   };
-                      
-                  
